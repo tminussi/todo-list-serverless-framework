@@ -1,0 +1,21 @@
+service: todo-list
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: dev
+  region: us-east-1
+
+functions:
+  create:
+    handler: src/todo-list/handler.create
+    role: ${cf:${self:custom.stage}-todo-list-outputs.RoleARN}
+    events:
+     - http:
+         path: tasks
+         method: post
+    environment: 
+      TODO_REGISTRATIONS_TABLE: ${cf:${self:custom.stage}-todo-list-outputs.TodoListTableName}
+
+custom:
+  stage: ${opt:stage, self:provider.stage}
